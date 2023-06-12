@@ -22,6 +22,7 @@ public:
     void processRequest(Request request, int startTime);
     bool getStatus();
     void currentState(int curTime);
+    int getName() { return this->name; };
 };
 
 #endif

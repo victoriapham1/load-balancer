@@ -25,8 +25,9 @@ void LoadBalancer::process()
             if (serverStatus && !this->requestQueue.empty())
             {
                 server.processRequest(this->requestQueue.front(), i);
-                this->requestQueue.pop();
+                cout << "Server " << server.getName() << " has begun processing " << this->requestQueue.front().getIP_in() << " to " << this->requestQueue.front().getIP_out() << " at " << i << " clock cycle." << endl;
                 availableServers--;
+                this->requestQueue.pop();
             }
 
             server.currentState(i);
