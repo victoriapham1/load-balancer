@@ -1,9 +1,20 @@
+/**
+ * @file loadbalancer.cpp
+ * @brief Implementation of the LoadBalancer class.
+ */
+
 #include <iostream>
 #include <random>
 
 #include "loadbalancer.h"
 #include "request.h"
 
+/**
+ * @brief Constructs a LoadBalancer object.
+ * @param requestqueue The request queue.
+ * @param servers The vector of web servers.
+ * @param time The time duration for load balancing.
+ */
 LoadBalancer::LoadBalancer(queue<Request> requestqueue, vector<Webserver> servers, int time)
 {
     this->requestQueue = requestqueue;
@@ -11,6 +22,9 @@ LoadBalancer::LoadBalancer(queue<Request> requestqueue, vector<Webserver> server
     this->time = time;
 }
 
+/**
+ * @brief Processes the load balancing operation.
+ */
 void LoadBalancer::process()
 {
     int availableServers = this->servers.size();

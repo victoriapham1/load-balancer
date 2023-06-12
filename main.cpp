@@ -1,3 +1,9 @@
+/**
+ * @file main.cpp
+ *
+ * @brief This file contains the main function to run the load balancer simulation.
+ */
+
 #include <iostream>
 #include <ostream>
 #include <vector>
@@ -9,6 +15,12 @@
 
 using namespace std;
 
+/**
+ * @brief Gets input from the user to determine the number of servers and clock cycles for the load balancer.
+ *
+ * @param num_server Reference to the variable to store the number of servers.
+ * @param num_cycle Reference to the variable to store the number of clock cycles.
+ */
 void getInput(int &num_server, int &num_cycle)
 {
     cout << "Select option to run load balancer: [d]efault or [c]ustom: ";
@@ -32,6 +44,11 @@ void getInput(int &num_server, int &num_cycle)
     }
 }
 
+/**
+ * @brief The main function to run the load balancer simulation.
+ *
+ * @return The exit status of the program.
+ */
 int main()
 {
     // default
@@ -46,7 +63,7 @@ int main()
 
     queue<Request> requestqueue;
     int full_queue = num_server * 100;
-    // int full_queue = 10;
+
     for (int i = 0; i < full_queue; i++)
     {
         Request r = Request();
