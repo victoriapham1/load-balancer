@@ -1,6 +1,6 @@
 /**
  * @file main.cpp
- *
+ * @author Victoria Pham
  * @brief This file contains the main function to run the load balancer simulation.
  */
 
