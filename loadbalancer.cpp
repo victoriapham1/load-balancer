@@ -49,7 +49,9 @@ void LoadBalancer::process()
             if (generateRequest())
             {
                 requestsMade++;
-                this->requestQueue.push(Request());
+                Request r = Request();
+                this->requestQueue.push(r);
+                cout << "Request generated: From " << r.getIP_in() << " to " << r.getIP_out() << " in " << r.getTime() << endl;
             }
         }
     }
