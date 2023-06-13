@@ -8,9 +8,10 @@
 
 #include "loadbalancer.h"
 #include "request.h"
+#include "firewall.h"
 
 /**
- * @brief Constructs a LoadBalancer object.
+ * @brief Constructs a LoadBalancer object with the specified parameters.
  * @param requestqueue The request queue.
  * @param servers The vector of web servers.
  * @param time The time duration for load balancing.
@@ -20,6 +21,22 @@ LoadBalancer::LoadBalancer(queue<Request> requestqueue, vector<Webserver> server
     this->requestQueue = requestqueue;
     this->servers = servers;
     this->time = time;
+}
+
+/**
+ * @brief Constructs a LoadBalancer object with the specified parameters, including a firewall.
+ * @param requestqueue The request queue.
+ * @param servers The vector of web servers.
+ * @param time The time duration for load balancing.
+ * @param firewall The firewall object to be used.
+ */
+LoadBalancer::LoadBalancer(queue<Request> requestqueue, vector<Webserver> servers, int time, FireWall firewall)
+{
+    this->requestQueue = requestqueue;
+    this->servers = servers;
+    this->time = time;
+    this->firewall = firewall;
+    this->isFirewallOn = true;
 }
 
 /**
@@ -38,9 +55,27 @@ void LoadBalancer::process()
             bool serverStatus = server.getStatus();
             if (serverStatus && !this->requestQueue.empty())
             {
-                server.processRequest(this->requestQueue.front(), i);
-                cout << "Server " << server.getName() << " has begun processing " << this->requestQueue.front().getIP_in() << " to " << this->requestQueue.front().getIP_out() << " at " << i << " clock cycle." << endl;
-                availableServers--;
+                Request r = this->requestQueue.front();
+                if (this->isFirewallOn)
+                {
+                    // Ensure Request IPs are not restricted given the firewall range.
+                    if (this->firewall.isAddressNotInRange(r.getIP_in()) && this->firewall.isAddressNotInRange(r.getIP_out()))
+                    {
+                        server.processRequest(r, i);
+                        cout << "Server " << server.getName() << " has begun processing " << r.getIP_in() << " to " << r.getIP_out() << " at " << i << " clock cycle." << endl;
+                        availableServers--;
+                    }
+                    else
+                    {
+                        cout << "BLOCKED: Request from " << r.getIP_in() << " to " << r.getIP_out() << "." << endl;
+                    }
+                }
+                else // If firewall is not on, load the balancer as normal.
+                {
+                    server.processRequest(r, i);
+                    cout << "Server " << server.getName() << " has begun processing " << r.getIP_in() << " to " << r.getIP_out() << " at " << i << " clock cycle." << endl;
+                    availableServers--;
+                }
                 this->requestQueue.pop();
             }
 
@@ -74,6 +109,11 @@ void LoadBalancer::process()
     cout << requestsMade << " new requests made." << endl;
 }
 
+/**
+ * @brief Generates a request with a 10% chance.
+ *
+ * @return True if a request is generated, false otherwise.
+ */
 bool LoadBalancer::generateRequest()
 {
     std::random_device rd;
